@@ -10,8 +10,13 @@ const int DRIVE_SPEED = 110;
 const int TURN_SPEED = 90;
 const int SWING_SPEED = 90;
 
-pros::Motor intakeMotor(-6);
-pros::Motor scoopMotor(7);
+  pros::Motor intakeMotor(6);
+  pros::Motor scoopLeftMotor(14);
+  pros::Motor scoopRightMotor(8);
+  pros::Rotation scoopLeftRotation(13);
+  pros::Rotation scoopRightRotation(12);
+  ez::Piston leftWing('H', false);
+  ez::Piston rightWing('G', false);
 
 void intakeIn(){
   intakeMotor = 127;
@@ -23,7 +28,29 @@ void intakeOut(){
 void intakeStop(){
   intakeMotor = 0;
 }
+void leftWingDeployed(){
+  leftWing.set(true);
 
+}
+void leftWingRetracted(){
+  leftWing.set(false);
+}
+
+inline void spinLeftSlapperToPosition(int pos, int speed) {
+    while(scoopLeftMotor.get_position() < pos) {
+        scoopLeftMotor.move(speed);
+        pros::delay(5);
+    }
+
+    scoopLeftMotor.brake();
+
+    while(scoopLeftMotor.get_position() > pos) {
+        scoopLeftMotor.move(-20);
+        pros::delay(5);
+    }
+
+    scoopLeftMotor.brake();
+}
 
 
 ///
@@ -159,17 +186,18 @@ void drive_example() {
 // Turn Example
 ///
 void turn_example() {
-  // The first parameter is target degrees
-  // The second parameter is max speed the robot will drive at
+  //deploy left wing
+  leftWingDeployed();
 
-  chassis.pid_turn_set(90_deg, TURN_SPEED);
-  chassis.pid_wait();
+  //Scoop
+  spinLeftSlapperToPosition(30, 127);
+  scoopLeftRotation.set_position(0);
+  pros::delay(100);
 
-  chassis.pid_turn_set(45_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(0_deg, TURN_SPEED);
-  chassis.pid_wait();
+     for(int i=0; i<13; i++) {
+        spinLeftSlapperToPosition(300*(i+1), 127);
+        pros::delay(1500);
+     }
 }
 
 ///

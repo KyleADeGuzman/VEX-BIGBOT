@@ -62,8 +62,8 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-    Auton("Example Drive\n\nDrive forward and come back.", drive_example),
-    Auton("Example Turn\n\nTurn 3 times.", turn_example),
+    Auton("MATCH AUTO\n\n 4 Triball Auto", drive_example),
+    Auton("SKILLS\n\nMATCHLOAD n Times.", turn_example),
     Auton("Drive and Turn\n\nDrive forward, turn, come back. ", drive_and_turn),
     Auton("Drive and Turn\n\nSlow down during drive.", wait_until_change_speed),
     Auton("Swing Example\n\nSwing in an 'S' curve", swing_example),
@@ -86,6 +86,8 @@ void initialize() {
  */
 void disabled() {
   // . . .
+    ez::Piston rightWing('G', false);
+  rightWing.set(true);
 }
 
 
@@ -228,17 +230,10 @@ void opcontrol() {
 			rightWing.set(rightWingDeployed);    
     }
     if(master.get_digital(DIGITAL_UP)){
-
-      int pos = scoopLeftRotation.get_position() + 36000;
-      
-      scoopLeftRotation.set_position(pos);
-      
-      while(scoopLeftRotation.get_position() > -36000) {
-        pros::lcd::print(1, "Scooper Position: %d", scoopLeftRotation.get_position());
-        scoopLeftMotor.move(127);
-        pros::delay(20);
-      }
-      scoopLeftMotor.move(0);
+      scoopLeftMotor = 127;
+    }
+    else{
+      scoopLeftMotor = 0;
     }
     // . . .
 
